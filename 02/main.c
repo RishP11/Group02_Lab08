@@ -24,3 +24,19 @@ int main( void )
         ;
     }
 }
+
+void PORT_F_init( void )
+{
+    GPIO_PORTF_LOCK_R = 0x4C4F434B ;                            // Unlock commit register
+    GPIO_PORTF_CR_R = 0xF1 ;                                    // Make PORT-F configurable
+    GPIO_PORTF_DEN_R = 0x1F ;                                   // Set PORT-F pins as digital pins
+    GPIO_PORTF_DIR_R = 0x0E ;                                   // Set PORT-F pin directions
+    GPIO_PORTF_PUR_R = 0x11 ;                                   // Pull-Up-Resistor Register
+    GPIO_PORTF_DATA_R = 0x00 ;                                  // Clearing previous data
+}
+
+void CLK_enable( void )
+{
+    SYSCTL_RCGCI2C_R |= (1 << 2) | (1 << 0) ;   // Provide clocks to Modules 0 and 2
+    SYSCTL_RCGCGPIO_R |= (1 << 5) | (1 << 4) | (1 << 1) ; // Clocks to Ports B, E, and F
+}
