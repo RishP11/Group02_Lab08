@@ -11,6 +11,13 @@
 #include <stdbool.h>
 #include "tm4c123gh6pm.h"
 
+void CLK_enable( void );
+void PORT_F_init( void );
+void PORT_E_init( void );
+void PORT_B_init( void );
+void i2c_init( void );
+void i2c_dataTx( uint8_t dataByte ) ;
+
 int main( void )
 {
     while(1){
