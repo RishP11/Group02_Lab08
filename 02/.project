@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>oled_i2c</name>
+	<name>i2c_comms</name>
 	<comment></comment>
 	<projects>
 	</projects>
