@@ -1,5 +1,5 @@
 /*
- * EE 690/615 Embedded Systems Lab No. 07
+ * EE 690/615 Embedded Systems Lab Number 08
  * Group 02 :
  * 210020009 - Ganesh Panduranga Karamsetty
  * 210020036 - Rishabh Pomaje
@@ -23,28 +23,25 @@ int main(void)
     CLK_enable();                                               // Enable all the required Clocks
     PORT_F_init();                                              // Setup Port F to interface with LEDs and Switches
     PORT_A_init();                                              // Setup Port E to interface with the UART
-    UART0_setup();                                              // Setup UART Module 07
+    UART0_setup();                                              // Setup UART Module 0
 
     while(1){
-        char rxData = UART_Rx() ;                      // Check if there is any Rx message in FIFO
+        char rxData = UART_Rx() ;                               // Check if there is any Rx message in FIFO
             // GPIO_PORTF_DATA_R = |_|_|_|SW1|G|B|R|SW2|
             if (rxData == 'R'){
-                GPIO_PORTF_DATA_R = 0x02 ;                      // Received Data is 0xAA so turn on green LED.
+                GPIO_PORTF_DATA_R = 0x02 ;                      // Received Data is 'R' :: Turn on Red LED.
                 UART_Tx(rxData) ;
-                click_flag = 1 ;
             }
             else if (rxData == 'G'){
-                GPIO_PORTF_DATA_R = 0x08 ;                      // Received Data is 0xF0 so turn on blue LED.
+                GPIO_PORTF_DATA_R = 0x08 ;                      // Received Data is 'G' :: Turn on Green LED.
                 UART_Tx(rxData) ;
-                click_flag = 1 ;
             }
             else if (rxData == 'B'){
-                GPIO_PORTF_DATA_R = 0x04 ;                      // Turn ON BLUE LED.
+                GPIO_PORTF_DATA_R = 0x04 ;                      // Received Data is 'B' :: Turn on Blue LED.
                 UART_Tx(rxData) ;
-                click_flag = 1 ;
             }
             else if (rxData != 0){
-                GPIO_PORTF_DATA_R = 0x00 ;                  //TURn off led
+                GPIO_PORTF_DATA_R = 0x00 ;                      // Unrecognized LED :: Turn off led
                 UART_Tx(rxData) ;
             }
     }
@@ -53,9 +50,9 @@ int main(void)
 void CLK_enable( void )
 {
     // Setting up the UART clocks
-    SYSCTL_RCGCUART_R |= (1 << 0) ;                             // Enabling the clock to UART module 7
-    SYSCTL_RCGCGPIO_R |= (1 << 0) ;                           // Enable clock to GPIO_A
-    SYSCTL_RCGCGPIO_R |= (1 << 5) ;                           // Enable clock to GPIO_F
+    SYSCTL_RCGCUART_R |= (1 << 0) ;                             // Enabling the clock to UART module 0
+    SYSCTL_RCGCGPIO_R |= (1 << 0) ;                             // Enable clock to GPIO_A
+    SYSCTL_RCGCGPIO_R |= (1 << 5) ;                             // Enable clock to GPIO_F
 }
 
 void UART_Tx( char data )
@@ -103,11 +100,11 @@ void UART0_setup( void )
 void PORT_A_init( void )
 {
     GPIO_PORTA_LOCK_R = 0x4C4F434B ;                            // Unlock commit register
-    GPIO_PORTA_CR_R = 0xF1 ;                                    // Make PORT-E configurable
-    GPIO_PORTA_DEN_R = 0x03 ;                                   // Set PORT-E pins as digital pins
-    GPIO_PORTA_DIR_R = 0x02 ;                                   // Set PORT-E pin directions
+    GPIO_PORTA_CR_R = 0xF1 ;                                    // Make PORT-A configurable
+    GPIO_PORTA_DEN_R = 0x03 ;                                   // Set PORT-A pins as digital pins
+    GPIO_PORTA_DIR_R = 0x02 ;                                   // Set PORT-A pin directions
     GPIO_PORTA_PUR_R = 0x02 ;                                   // Pull-Up-Resistor Register
-    GPIO_PORTA_AFSEL_R = 0x03 ;                                 // Alternate function select for the PE0 and PE1
+    GPIO_PORTA_AFSEL_R = 0x03 ;                                 // Alternate function select for the PA0 and PA1
     GPIO_PORTA_PCTL_R = 0x11 ;                                  // Selecting the peripheral for the driving AFSEL
 }
 
