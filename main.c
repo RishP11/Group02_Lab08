@@ -26,9 +26,9 @@ int main(void)
     UART7_setup();                                              // Setup UART Module 07
     while(1){
         unsigned char rxData = UART_Rx() ;                      // Check if there is any Rx message in FIFO
-        if ((UART7_RSR_R & (0x02)) != 0){                       // ...|3-|2-|1-|0-|
+        if ((UART0_RSR_R & (0x02)) != 0){                       // ...|3-|2-|1-|0-|
             GPIO_PORTF_DATA_R = 0x02 ;                          // There is an error so turn ON red LED.
-            UART7_ECR_R = 0xFF ;                                // Clear the Receive status register
+            UART0_ECR_R = 0xFF ;                                // Clear the Receive status register
         }
         else{
             // GPIO_PORTF_DATA_R = |_|_|_|SW1|G|B|R|SW2|
@@ -59,16 +59,16 @@ void CLK_enable( void )
 
 void UART_Tx( unsigned char data )
 {
-    while((UART7_FR_R & (1 << 3)) != 0){                        // |7-TXFE|6-RXFF|5-TXFF|4-RXFE|3-BUSY|2-...|1-...|0-CTS|
+    while((UART0_FR_R & (1 << 3)) != 0){                        // |7-TXFE|6-RXFF|5-TXFF|4-RXFE|3-BUSY|2-...|1-...|0-CTS|
          ;                                                      // Check for BUSY bit and wait for Tx-FIFO to become free
     }
-    UART7_DR_R = data ;                                         // Place the Tx-message in the Data Register
+    UART0_DR_R = data ;                                         // Place the Tx-message in the Data Register
 }
 
 unsigned char UART_Rx( void )
 {
-    if((UART7_FR_R & 0x40) != 0){                               // |7-TXFE|6-RXFF|5-TXFF|4-RXFE|3-BUSY|2-...|1-...|0-CTS|
-        unsigned char rxData = UART7_DR_R ;
+    if((UART0_FR_R & 0x40) != 0){                               // |7-TXFE|6-RXFF|5-TXFF|4-RXFE|3-BUSY|2-...|1-...|0-CTS|
+        unsigned char rxData = UART0_DR_R ;
         return rxData ;                                         // Read the Rx-message from the Data Register since Rx-FIFO is full
     }
     else{
@@ -76,9 +76,9 @@ unsigned char UART_Rx( void )
     }
 }
 
-void UART7_setup( void )
+void UART0_setup( void )
 {
-    UART7_CTL_R = 0x00 ;                                        // Disabling the UART
+    UART0_CTL_R = 0x00 ;                                        // Disabling the UART
 
     // Calculations for Baud Rate Divisor
     int UARTSysClk = CLOCK_HZ ;                                 // Using system clock for UART module
@@ -91,12 +91,12 @@ void UART7_setup( void )
     int BRDF = 64 * BRD + 0.5 ;                                 // Fractional part of the BRD to write to the register
 
     // Configuring the UART
-    UART7_IBRD_R = BRDI ;                                       // Integer part of the BRD :: 16-bits
-    UART7_FBRD_R = BRDF ;                                       // Fractional part of the BRD :: 6 bits
-    UART7_LCRH_R |= (1 << 6) | (1 << 5) | (1 << 1) ;            // |7-SPS|6,5-WLEN|4-FEN|3-STP2|2-EPS|1-PEN|0-BRK|
-    UART7_CC_R = 0x00 ;                                         // Clock source of the register
-    UART7_ECR_R = 0xFF ;                                        // Clear any existing errors in RSR
-    UART7_CTL_R |= (1 << 9) | (1 << 8) | (1 << 0) ;             // |9-RXE|8-TXE|7-LBE|6-...|5-HSE|4-EOT|3-SMART|2-SIRLP|1-SIREN|0-UARTEN|
+    UART0_IBRD_R = BRDI ;                                       // Integer part of the BRD :: 16-bits
+    UART0_FBRD_R = BRDF ;                                       // Fractional part of the BRD :: 6 bits
+    UART0_LCRH_R |= (1 << 6) | (1 << 5) | (1 << 1) ;            // |7-SPS|6,5-WLEN|4-FEN|3-STP2|2-EPS|1-PEN|0-BRK|
+    UART0_CC_R = 0x00 ;                                         // Clock source of the register
+    UART0_ECR_R = 0xFF ;                                        // Clear any existing errors in RSR
+    UART0_CTL_R |= (1 << 9) | (1 << 8) | (1 << 0) ;             // |9-RXE|8-TXE|7-LBE|6-...|5-HSE|4-EOT|3-SMART|2-SIRLP|1-SIREN|0-UARTEN|
 }
 
 void PORT_E_init( void )
