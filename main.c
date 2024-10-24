@@ -3,7 +3,7 @@
  * Group 02 :
  * 210020009 - Ganesh Panduranga Karamsetty
  * 210020036 - Rishabh Pomaje
- * Program to setup the UART module on the muC and communicate with another muC.
+ * Program to setup the UART module on the muC and communicate with PC.
 */
 #define CLOCK_HZ    16000000
 
@@ -13,39 +13,40 @@
 
 void CLK_enable( void );
 void PORT_F_init( void );
-void PORT_E_init( void );
-void UART7_setup( void );
-void UART_Tx( unsigned char );
-unsigned char UART_Rx( void );
+void PORT_A_init( void );
+void UART0_setup( void );
+void UART_Tx( char );
+char UART_Rx( void );
 
 int main(void)
 {
     CLK_enable();                                               // Enable all the required Clocks
     PORT_F_init();                                              // Setup Port F to interface with LEDs and Switches
-    PORT_E_init();                                              // Setup Port E to interface with the UART
-    UART7_setup();                                              // Setup UART Module 07
+    PORT_A_init();                                              // Setup Port E to interface with the UART
+    UART0_setup();                                              // Setup UART Module 07
+
     while(1){
-        unsigned char rxData = UART_Rx() ;                      // Check if there is any Rx message in FIFO
-        if ((UART0_RSR_R & (0x02)) != 0){                       // ...|3-|2-|1-|0-|
-            GPIO_PORTF_DATA_R = 0x02 ;                          // There is an error so turn ON red LED.
-            UART0_ECR_R = 0xFF ;                                // Clear the Receive status register
-        }
-        else{
+        char rxData = UART_Rx() ;                      // Check if there is any Rx message in FIFO
             // GPIO_PORTF_DATA_R = |_|_|_|SW1|G|B|R|SW2|
-            if (rxData == 0xAA){
-                GPIO_PORTF_DATA_R = 0x08 ;                      // Received Data is 0xAA so turn on green LED.
+            if (rxData == 'R'){
+                GPIO_PORTF_DATA_R = 0x02 ;                      // Received Data is 0xAA so turn on green LED.
+                UART_Tx(rxData) ;
+                click_flag = 1 ;
             }
-            else if (rxData == 0xF0){
-                GPIO_PORTF_DATA_R = 0x04 ;                      // Received Data is 0xF0 so turn on blue LED.
+            else if (rxData == 'G'){
+                GPIO_PORTF_DATA_R = 0x08 ;                      // Received Data is 0xF0 so turn on blue LED.
+                UART_Tx(rxData) ;
+                click_flag = 1 ;
             }
-        }
-        unsigned char status_byte = GPIO_PORTF_DATA_R;          // Send message (if any)
-        if (((~status_byte) & 0x10) != 0){
-            UART_Tx(0xF0);                                      // Transmit 0xF0 if SW1 is pressed
-        }
-        if (((~status_byte) & 0x01) != 0){
-            UART_Tx(0xAA);                                      // Transmit 0xAA if SW2 is pressed
-        }
+            else if (rxData == 'B'){
+                GPIO_PORTF_DATA_R = 0x04 ;                      // Turn ON BLUE LED.
+                UART_Tx(rxData) ;
+                click_flag = 1 ;
+            }
+            else if (rxData != 0){
+                GPIO_PORTF_DATA_R = 0x00 ;                  //TURn off led
+                UART_Tx(rxData) ;
+            }
     }
 }
 
@@ -57,7 +58,7 @@ void CLK_enable( void )
     SYSCTL_RCGCGPIO_R |= (1 << 5) ;                           // Enable clock to GPIO_F
 }
 
-void UART_Tx( unsigned char data )
+void UART_Tx( char data )
 {
     while((UART0_FR_R & (1 << 3)) != 0){                        // |7-TXFE|6-RXFF|5-TXFF|4-RXFE|3-BUSY|2-...|1-...|0-CTS|
          ;                                                      // Check for BUSY bit and wait for Tx-FIFO to become free
@@ -65,10 +66,10 @@ void UART_Tx( unsigned char data )
     UART0_DR_R = data ;                                         // Place the Tx-message in the Data Register
 }
 
-unsigned char UART_Rx( void )
+char UART_Rx( void )
 {
     if((UART0_FR_R & 0x40) != 0){                               // |7-TXFE|6-RXFF|5-TXFF|4-RXFE|3-BUSY|2-...|1-...|0-CTS|
-        unsigned char rxData = UART0_DR_R ;
+        char rxData = UART0_DR_R ;
         return rxData ;                                         // Read the Rx-message from the Data Register since Rx-FIFO is full
     }
     else{
