@@ -99,15 +99,15 @@ void UART0_setup( void )
     UART0_CTL_R |= (1 << 9) | (1 << 8) | (1 << 0) ;             // |9-RXE|8-TXE|7-LBE|6-...|5-HSE|4-EOT|3-SMART|2-SIRLP|1-SIREN|0-UARTEN|
 }
 
-void PORT_E_init( void )
+void PORT_A_init( void )
 {
-    GPIO_PORTE_LOCK_R = 0x4C4F434B ;                            // Unlock commit register
-    GPIO_PORTE_CR_R = 0xF1 ;                                    // Make PORT-E configurable
-    GPIO_PORTE_DEN_R = 0x03 ;                                   // Set PORT-E pins as digital pins
-    GPIO_PORTE_DIR_R = 0x02 ;                                   // Set PORT-E pin directions
-    GPIO_PORTE_PUR_R = 0x02 ;                                   // Pull-Up-Resistor Register
-    GPIO_PORTE_AFSEL_R = 0x03 ;                                 // Alternate function select for the PE0 and PE1
-    GPIO_PORTE_PCTL_R = 0x11 ;                                  // Selecting the peripheral for the driving AFSEL
+    GPIO_PORTA_LOCK_R = 0x4C4F434B ;                            // Unlock commit register
+    GPIO_PORTA_CR_R = 0xF1 ;                                    // Make PORT-E configurable
+    GPIO_PORTA_DEN_R = 0x03 ;                                   // Set PORT-E pins as digital pins
+    GPIO_PORTA_DIR_R = 0x02 ;                                   // Set PORT-E pin directions
+    GPIO_PORTA_PUR_R = 0x02 ;                                   // Pull-Up-Resistor Register
+    GPIO_PORTA_AFSEL_R = 0x03 ;                                 // Alternate function select for the PE0 and PE1
+    GPIO_PORTA_PCTL_R = 0x11 ;                                  // Selecting the peripheral for the driving AFSEL
 }
 
 void PORT_F_init( void )
