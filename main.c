@@ -52,9 +52,9 @@ int main(void)
 void CLK_enable( void )
 {
     // Setting up the UART clocks
-    SYSCTL_RCGCUART_R |= (1 << 7) ;                             // Enabling the clock to UART module 7
-    SYSCTL_RCGCGPIO_R |= 0x00000010 ;                           // Enable clock to GPIO_E
-    SYSCTL_RCGCGPIO_R |= 0x00000020 ;                           // Enable clock to GPIO_F
+    SYSCTL_RCGCUART_R |= (1 << 0) ;                             // Enabling the clock to UART module 7
+    SYSCTL_RCGCGPIO_R |= (1 << 0) ;                           // Enable clock to GPIO_A
+    SYSCTL_RCGCGPIO_R |= (1 << 5) ;                           // Enable clock to GPIO_F
 }
 
 void UART_Tx( unsigned char data )
@@ -119,4 +119,4 @@ void PORT_F_init( void )
     GPIO_PORTF_PUR_R = 0x11 ;                                   // Pull-Up-Resistor Register
     GPIO_PORTF_DATA_R = 0x00 ;                                  // Clearing previous data
 }
-s
+
